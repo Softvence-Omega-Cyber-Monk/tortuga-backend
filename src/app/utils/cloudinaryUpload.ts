@@ -1,21 +1,31 @@
-import { cloudinary } from "../config/cloudinary.config";
+import { cloudinary, configureCloudinary } from "../config/cloudinary.config";
 import fs from "fs";
 
 export const uploadToCloudinary = async (
-  localPath: string,
-  folder: string = "products"
+  filePath: string,
+  folder: string
 ): Promise<string> => {
   try {
-    const result = await cloudinary.uploader.upload(localPath, {
-      folder,
-      resource_type: "auto", // auto handles images & videos
+    // Ensure cloudinary is configured before uploading
+    configureCloudinary();
+
+    const result = await cloudinary.uploader.upload(filePath, {
+      folder: folder,
+      resource_type: "auto",
     });
 
-    fs.unlinkSync(localPath); // Delete temp file
+    // Delete the local file after successful upload
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
     return result.secure_url;
   } catch (error) {
-    if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
-    console.error("Cloudinary upload failed:", error);
+    // Clean up the file even if upload fails
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    console.error('Cloudinary upload error:', error);
     throw error;
   }
 };

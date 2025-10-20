@@ -7,6 +7,7 @@ export interface IConsultant {
   preferredDate: string;
   preferredTime: string;
   message: string;
+  status: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -34,6 +34,7 @@ class ProductController {
 
             const productData = {
                 name: req.body.name,
+                company: req.body.company,
                 category: req.body.category as ProductCategory,
                 description: req.body.description,
                 price: parseFloat(req.body.price),

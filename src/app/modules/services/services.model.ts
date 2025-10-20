@@ -14,6 +14,21 @@ const ServiceSchema = new Schema<IService>(
       required: true,
       trim: true,
     },
+    details: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    products: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Product"
+      }
+    ],
+    imageUrl: {
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 );

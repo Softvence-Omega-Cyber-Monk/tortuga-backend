@@ -31,6 +31,10 @@ const ProductSchema = new Schema<IProduct>(
       type: String,
       required: [true, "Product description is required"],
     },
+    company: {
+      type: String,
+      required: [true, "Company Name is required"]
+    },
     price: {
       type: Number,
       required: [true, "Product price is required"],

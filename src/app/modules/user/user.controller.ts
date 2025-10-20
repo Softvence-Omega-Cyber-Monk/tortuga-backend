@@ -14,7 +14,7 @@ export class UserController {
     async registerCustomer(req: Request, res: Response) {
         try {
             const { user, accessToken, refreshToken } = await userService.registerCustomer(req.body);
-            res.cookie("accessToken", accessToken, getCookieOptions(15 * 60 * 1000)); // 15 minutes
+            res.cookie("accessToken", accessToken, getCookieOptions(30 * 60 * 1000)); // 15 minutes
             res.cookie("refreshToken", refreshToken, getCookieOptions(7 * 24 * 60 * 60 * 1000));
 
             res.status(201).json({
@@ -34,7 +34,7 @@ export class UserController {
             const { user, accessToken, refreshToken } = await userService.login(email, password);
 
             // Set tokens in cookies
-            res.cookie("accessToken", accessToken, getCookieOptions(60 * 60 * 1000)); // 15 minutes
+            res.cookie("accessToken", accessToken, getCookieOptions(30 * 60 * 1000)); // 15 minutes
             res.cookie("refreshToken", refreshToken, getCookieOptions(7 * 24 * 60 * 60 * 1000)); // 7 days
 
             res.json({

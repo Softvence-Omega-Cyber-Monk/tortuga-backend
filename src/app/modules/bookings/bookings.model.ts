@@ -1,29 +1,9 @@
 import { Schema, model } from "mongoose";
 import { IBooking } from "./bookings.interface";
 
-const BookingProductSchema = new Schema({
-  productId: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  quantity: {
-    type: Number,
-    required: true
-  },
-  price: {
-    type: Number,
-    required: true
-  }
-});
-
 const BookingSchema = new Schema<IBooking>(
   {
-    fullName: {
+    fullname: {
       type: String,
       required: true,
       trim: true
@@ -53,9 +33,9 @@ const BookingSchema = new Schema<IBooking>(
       type: String,
       required: true
     },
-    products: {
-      type: [BookingProductSchema],
-      required: true
+    status : {
+      type: String,
+      default: 'PENDING'
     }
   },
   {

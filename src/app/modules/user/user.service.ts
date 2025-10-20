@@ -18,7 +18,7 @@ export class UserService {
         return { user, accessToken, refreshToken }
     }
     private generateAccessToken(id: string, role: string) {
-        const secret = process.env.JWT_SECRET || "secretKey";
+        const secret = process.env.JWT_SECRET || "secretkey";
         return jwt.sign({ id, role }, secret, { expiresIn: "30m" })
     }
     private generateRefreshToken(id: string, role: string) {
@@ -43,10 +43,9 @@ export class UserService {
     }
     async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
         try {
-            const secret = process.env.JWT_REFRESH_SECRET || "refresh_secretkey";
+            const secret = process.env.JWT_REFRESH_SECRET || "refreshSecretKey"; // FIXED: Match the generation secret
             const decoded = jwt.verify(refreshToken, secret) as { id: string; role: string };
 
-            // Verify user still exists and is active
             const user = await UserModel.findById(decoded.id);
             if (!user || !user.isActive) {
                 throw new Error("User not found or inactive");

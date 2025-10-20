@@ -35,6 +35,10 @@ const ConsultantSchema = new Schema<IConsultant>(
       type: String,
       trim: true,
     },
+    status: {
+      type: String,
+      default: "PENDING"
+    }
   },
   { timestamps: true }
 );

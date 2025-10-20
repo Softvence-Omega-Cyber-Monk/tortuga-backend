@@ -84,6 +84,7 @@ export interface IProduct {
   description: string;
   price: number;
   imageUrl?: string;
+  company: string;
   
   // Product-specific attributes based on category
   attributes: ProductAttributes;

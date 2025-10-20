@@ -1,24 +1,42 @@
+import dotenv from "dotenv";
+// Load environment variables FIRST before any other imports
+dotenv.config();
+
 import express, { type Request, type Response } from "express";
-import cors from "cors"
-import dotenv from "dotenv"
+import cors from "cors";
 import { ProductRoutes } from "./app/modules/product/product.routes";
 import { UserRoutes } from "./app/modules/user/user.routes";
+import { ServiceRoutes } from "./app/modules/services/services.routes";
+import { ConsultantRoutes } from "./app/modules/consultants/consultants.routes";
+import { BookingRoutes } from "./app/modules/bookings/bookings.routes";
+import { BlogRoutes } from "./app/modules/blog/blog.routes";
+import { setupSwagger } from "./app/config/swagger";
 
-const app = express()
+const app = express();
 
+// Verify environment variables are loaded
+console.log('Environment check:');
+console.log('CLOUDINARY_CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME);
+console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY);
+console.log('CLOUDINARY_API_SECRET:', process.env.CLOUDINARY_API_SECRET ? '✓ Set' : '✗ Not set');
 
-dotenv.config()
+app.use(cors({
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
+    credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(cors())
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
-
-app.use("/api/users", UserRoutes)
-app.use("/api/products", ProductRoutes)
+setupSwagger(app);
+app.use("/api/users", UserRoutes);
+app.use("/api/products", ProductRoutes);
+app.use("/api/services", ServiceRoutes);
+app.use("/api/consultants", ConsultantRoutes);
+app.use("/api/bookings", BookingRoutes);
+app.use("/api/blogs", BlogRoutes);
 
 app.get("/", (req: Request, res: Response) => {
     res.status(200).json("Welcome to tortuga backend");
-})
-
+});
 
 export default app;

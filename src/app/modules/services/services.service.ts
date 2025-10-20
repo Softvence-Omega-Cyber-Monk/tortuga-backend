@@ -11,13 +11,13 @@ export class ServiceService {
 
   // Get all services
   async getAllServices(): Promise<IService[]> {
-    const services = await Service.find().sort({ createdAt: -1 });
+    const services = await Service.find().populate("products");
     return services;
   }
 
   // Get single service by ID
   async getServiceById(id: string): Promise<IService | null> {
-    const service = await Service.findById(id);
+    const service = await Service.findById(id).populate("products");
     return service;
   }
 
