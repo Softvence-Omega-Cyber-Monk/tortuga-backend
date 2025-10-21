@@ -9,7 +9,6 @@ export const configureCloudinary = () => {
       api_secret: process.env.CLOUDINARY_API_SECRET!,
     });
     isConfigured = true;
-    console.log('✓ Cloudinary configured successfully');
   }
 };
 

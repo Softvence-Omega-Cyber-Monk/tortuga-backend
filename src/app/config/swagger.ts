@@ -7,9 +7,9 @@ export const setupSwagger = (app: Express) => {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "Multivendor E-commerce API",
+        title: "Tortuga API",
         version: "1.0.0",
-        description: "Backend API for multivendor e-commerce system with customers and vendors",
+        description: "Description Phasecription",
       },
       servers: [
         {
@@ -50,5 +50,4 @@ export const setupSwagger = (app: Express) => {
       operationsSorter: 'none',
     }
   }));
-  console.log("📘 Swagger docs available at: http://localhost:5000/docs");
 };

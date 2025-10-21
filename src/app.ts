@@ -11,14 +11,10 @@ import { ConsultantRoutes } from "./app/modules/consultants/consultants.routes";
 import { BookingRoutes } from "./app/modules/bookings/bookings.routes";
 import { BlogRoutes } from "./app/modules/blog/blog.routes";
 import { setupSwagger } from "./app/config/swagger";
+import { ConfiguratorRouter } from "./app/modules/configurator/configurator.routes";
 
 const app = express();
 
-// Verify environment variables are loaded
-console.log('Environment check:');
-console.log('CLOUDINARY_CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME);
-console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY);
-console.log('CLOUDINARY_API_SECRET:', process.env.CLOUDINARY_API_SECRET ? '✓ Set' : '✗ Not set');
 
 app.use(cors({
     origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
@@ -34,6 +30,7 @@ app.use("/api/services", ServiceRoutes);
 app.use("/api/consultants", ConsultantRoutes);
 app.use("/api/bookings", BookingRoutes);
 app.use("/api/blogs", BlogRoutes);
+app.use("/api/configurator", ConfiguratorRouter)
 
 app.get("/", (req: Request, res: Response) => {
     res.status(200).json("Welcome to tortuga backend");

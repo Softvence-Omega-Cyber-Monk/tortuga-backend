@@ -1,193 +1,107 @@
 import { Request, Response } from 'express';
 import configuratorService from './configurator.service';
+import { catchAsync } from '../../utils/catchAsync';
 
-class ConfigurationController {
-  // Create configuration
-  async createConfiguration(req: Request, res: Response) {
-    try {
-      const userId = (req as any).user?.id; // From auth middleware
-      const { guestUserInfo, products, totalPrice, notes } = req.body;
+class ConfiguratorController {
+  createConfiguration = catchAsync(async (req: Request, res: Response) => {
+    const { name, email, phone, selectedProducts, totalPrice, pdfBase64 } = req.body;
 
-      // Validation
-      if (!products || products.length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: 'Products are required'
-        });
-      }
-
-      if (!totalPrice || totalPrice <= 0) {
-        return res.status(400).json({
-          success: false,
-          message: 'Valid total price is required'
-        });
-      }
-
-      // Either userId or guestUserInfo required
-      if (!userId && !guestUserInfo) {
-        return res.status(400).json({
-          success: false,
-          message: 'User authentication or guest information is required'
-        });
-      }
-
-      const configData: any = {
-        products,
-        totalPrice,
-        notes
-      };
-
-      if (userId) {
-        configData.userId = userId;
-      } else {
-        // Validate guest info
-        if (!guestUserInfo.name || !guestUserInfo.email || !guestUserInfo.phone || !guestUserInfo.address) {
-          return res.status(400).json({
-            success: false,
-            message: 'Complete guest information is required (name, email, phone, address)'
-          });
-        }
-        configData.guestUserInfo = guestUserInfo;
-      }
-
-      const result = await configuratorService.createConfiguration(configData);
-      
-      return res.status(201).json(result);
-    } catch (error: any) {
-      console.error('Create configuration error:', error);
-      return res.status(500).json({
+    // Validate request
+    if (!name || !email || !phone || !selectedProducts || !totalPrice) {
+      return res.status(400).json({
         success: false,
-        message: error.message || 'Failed to create configuration'
+        message: 'Missing required fields'
       });
     }
-  }
 
-  // Get configuration by ID
-  async getConfiguration(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const result = await configuratorService.getConfigurationById(id);
-      
-      if (!result.success) {
-        return res.status(404).json(result);
+    if (!Array.isArray(selectedProducts) || selectedProducts.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one product must be selected'
+      });
+    }
+
+    // Create configuration
+    const configuration = await configuratorService.createConfiguration({
+      name,
+      email,
+      phone,
+      selectedProducts,
+      totalPrice
+    });
+
+    // Send email with PDF if pdfBase64 is provided
+    if (pdfBase64) {
+      try {
+        await configuratorService.sendConfigurationEmail(
+          email,
+          name,
+          pdfBase64,
+          totalPrice,
+          selectedProducts.length
+        );
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError);
+        // Continue even if email fails
       }
-
-      return res.status(200).json(result);
-    } catch (error: any) {
-      console.error('Get configuration error:', error);
-      return res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to get configuration'
-      });
     }
-  }
 
-  // Get user's configurations
-  async getUserConfigurations(req: Request, res: Response) {
-    try {
-      const userId = (req as any).user?.id;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const skip = parseInt(req.query.skip as string) || 0;
+    res.status(201).json({
+      success: true,
+      message: 'Configuration saved successfully',
+      data: configuration
+    });
+  });
 
-      if (!userId) {
-        return res.status(401).json({
-          success: false,
-          message: 'Authentication required'
-        });
-      }
+  getAllConfigurations = catchAsync(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
-      const result = await configuratorService.getUserConfigurations(userId, limit, skip);
-      
-      return res.status(200).json(result);
-    } catch (error: any) {
-      console.error('Get user configurations error:', error);
-      return res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to get user configurations'
-      });
-    }
-  }
+    const result = await configuratorService.getAllConfigurations(page, limit);
 
-  // Get all configurations (admin)
-  async getAllConfigurations(req: Request, res: Response) {
-    try {
-      const filters = {
-        status: req.query.status as string,
-        startDate: req.query.startDate as string,
-        endDate: req.query.endDate as string
-      };
-      const limit = parseInt(req.query.limit as string) || 20;
-      const skip = parseInt(req.query.skip as string) || 0;
+    res.status(200).json({
+      success: true,
+      data: result.configurations,
+      pagination: result.pagination
+    });
+  });
 
-      const result = await configuratorService.getAllConfigurations(filters, limit, skip);
-      
-      return res.status(200).json(result);
-    } catch (error: any) {
-      console.error('Get all configurations error:', error);
-      return res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to get configurations'
-      });
-    }
-  }
+  getConfigurationById = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const configuration = await configuratorService.getConfigurationById(id);
 
-  // Update configuration
-  async updateConfiguration(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const updateData = req.body;
+    res.status(200).json({
+      success: true,
+      data: configuration
+    });
+  });
 
-      const result = await configuratorService.updateConfiguration(id, updateData);
-      
-      if (!result.success) {
-        return res.status(404).json(result);
-      }
+  getConfigurationsByEmail = catchAsync(async (req: Request, res: Response) => {
+    const { email } = req.params;
+    const configurations = await configuratorService.getConfigurationsByEmail(email);
 
-      return res.status(200).json(result);
-    } catch (error: any) {
-      console.error('Update configuration error:', error);
-      return res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to update configuration'
-      });
-    }
-  }
-
-  // Delete configuration
+    res.status(200).json({
+      success: true,
+      data: configurations
+    });
+  });
   async deleteConfiguration(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const result = await configuratorService.deleteConfiguration(id);
-      
-      if (!result.success) {
-        return res.status(404).json(result);
-      }
+      await configuratorService.deleteConfiguration(id);
 
-      return res.status(200).json(result);
+      res.status(200).json({
+        success: true,
+        message: 'Configuration deleted successfully'
+      });
     } catch (error: any) {
-      console.error('Delete configuration error:', error);
-      return res.status(500).json({
+      console.error('❌ Delete error:', error);
+      res.status(404).json({
         success: false,
         message: error.message || 'Failed to delete configuration'
       });
     }
   }
-
-  // Get statistics
-  async getStatistics(req: Request, res: Response) {
-    try {
-      const userId = req.query.userId as string;
-      const result = await configuratorService.getConfigurationStats(userId);
-      
-      return res.status(200).json(result);
-    } catch (error: any) {
-      console.error('Get statistics error:', error);
-      return res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to get statistics'
-      });
-    }
-  }
 }
 
-export default new ConfigurationController();
+export default new ConfiguratorController();

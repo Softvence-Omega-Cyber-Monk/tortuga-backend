@@ -1,25 +1,17 @@
-export interface IConfigurationProduct {
-  productId: string;
-  productName: string;
+export interface ISelectedProduct {
   category: string;
-  price: number;
+  name: string;
+  description?: string;
   sku: string;
+  price: number;
   attributes?: Record<string, any>;
 }
 
-export interface IGuestUserInfo {
+export interface IConfigurator {
   name: string;
   email: string;
   phone: string;
-  address: string;
-}
-
-export interface IConfiguration {
-  userId?: string; // Optional - only for logged-in users
-  guestUserInfo?: IGuestUserInfo; // Optional - only for guest users
-  products: IConfigurationProduct[];
+  selectedProducts: ISelectedProduct[];
   totalPrice: number;
-  configurationDate: Date;
-  status: 'draft' | 'completed' | 'ordered';
-  notes?: string;
+  createdAt?: Date;
 }

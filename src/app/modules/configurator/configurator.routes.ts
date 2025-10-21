@@ -1,20 +1,17 @@
 import { Router } from 'express';
-import configurationController from './configurator.controller';
-// import { authenticate, optionalAuth } from '../middleware/auth.middleware'; // Your auth middleware
+import configuratorController from './configurator.controller';
+// import { authenticate } from '../middlewares/auth.middleware'; // If you need auth
 
 const router = Router();
 
-// Public/Semi-public routes
-router.post('/configurations', configurationController.createConfiguration);
+// Public routes
+router.post('/', configuratorController.createConfiguration);
 
-// Protected routes (require authentication)
-router.get('/configurations/my', configurationController.getUserConfigurations);
-router.get('/configurations/:id', configurationController.getConfiguration);
-router.put('/configurations/:id', configurationController.updateConfiguration);
-router.delete('/configurations/:id', configurationController.deleteConfiguration);
+// Protected routes (uncomment if you need authentication)
+// router.use(authenticate);
+router.get('/', configuratorController.getAllConfigurations);
+router.get('/:id', configuratorController.getConfigurationById);
+router.get('/email/:email', configuratorController.getConfigurationsByEmail);
+router.delete('/:id', configuratorController.deleteConfiguration);
 
-// Admin routes (add admin middleware as needed)
-router.get('/configurations', configurationController.getAllConfigurations);
-router.get('/configurations/stats', configurationController.getStatistics);
-
-export default router;
+export const ConfiguratorRouter = router;
