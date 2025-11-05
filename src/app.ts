@@ -17,7 +17,7 @@ const app = express();
 
 
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "https://tortuga7.com"],
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "https://tortuga7.com", "http://72.61.16.14:5000","https://72.61.16.14:5000", "http://api.tortuga7.com"],
     credentials: true
 }));
 app.use(express.json());
