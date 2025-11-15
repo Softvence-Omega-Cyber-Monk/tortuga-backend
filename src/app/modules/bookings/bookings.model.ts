@@ -17,23 +17,20 @@ const BookingSchema = new Schema<IBooking>(
       type: String,
       required: true
     },
-    street: {
+    service: {
       type: String,
-      required: true
+      required: true,
+      enum: [
+        'Custom Server',
+        'GPU Rental',
+        'KVM Instance',
+        'Onsite Warranty',
+        'Onsite Maintenance',
+        'Server Relocation',
+        'Other'
+      ]
     },
-    city: {
-      type: String,
-      required: true
-    },
-    zip: {
-      type: String,
-      required: true
-    },
-    country: {
-      type: String,
-      required: true
-    },
-    status : {
+    status: {
       type: String,
       default: 'PENDING'
     }
