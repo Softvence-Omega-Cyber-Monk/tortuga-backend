@@ -52,6 +52,16 @@ const ProductSchema = new Schema<IProduct>(
       type: [CompatibilityRuleSchema],
       default: [],
     },
+    keyFeatures: {
+      type: [String],
+      required: false,
+      default: [],
+      trim: true,
+    },
+    galleryUrls: {
+      type: [String],
+      default: [],
+    },
     isActive: {
       type: Boolean,
       default: true,

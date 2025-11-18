@@ -34,7 +34,7 @@ const router = Router();
  *       201:
  *         description: Product created successfully
  */
-router.post("/", multerUpload.single("image"), productController.createProduct);
+router.post("/", multerUpload.fields([{ name: "image", maxCount: 1 }, { name: "galleryImages", maxCount: 5 }]), productController.createProduct);
 
 /**
  * @swagger

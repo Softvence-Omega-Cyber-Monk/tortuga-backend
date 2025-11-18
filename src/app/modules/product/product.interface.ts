@@ -91,6 +91,9 @@ export interface IProduct {
   
   // Compatibility rules - which products this is compatible with
   compatibilityRules: CompatibilityRule[];
+
+  keyFeatures: string[];
+  galleryUrls?: string[];
   
   // Admin controls
   isActive: boolean;
@@ -111,6 +114,8 @@ export interface CreateProductDTO {
   description: string;
   price: number;
   attributes: ProductAttributes;
+  keyFeatures?: string[];
+  galleryUrls?: string[];
   compatibilityRules: CompatibilityRule[];
   isActive?: boolean;
   isEOL?: boolean;
