@@ -5,11 +5,22 @@ import { sendConfigurationEmail } from "../../utils/email.util";
 class ConfiguratorService {
   async createConfiguration(data: IConfigurator) {
     try {
+      // Validate that total price matches calculation
+      const calculatedTotal = data.selectedProducts.reduce(
+        (sum, product) => sum + (product.price * product.quantity),
+        0
+      );
+
+      // Allow small floating point differences
+      if (Math.abs(calculatedTotal - data.totalPrice) > 0.01) {
+        throw new Error(
+          `Total price mismatch. Expected ${calculatedTotal}, got ${data.totalPrice}`
+        );
+      }
+
       // Create configuration in database
       const configuration = await Configurator.create(data);
 
-      // Send email with PDF (the PDF will be generated on frontend and sent as base64)
-      // We'll return the configuration and let the frontend handle PDF generation
       return configuration;
     } catch (error: any) {
       throw new Error(`Failed to create configuration: ${error.message}`);
@@ -21,7 +32,7 @@ class ConfiguratorService {
     name: string,
     pdfBase64: string,
     totalPrice: number,
-    productsCount: number
+    totalItems: number
   ) {
     try {
       await sendConfigurationEmail({
@@ -29,7 +40,7 @@ class ConfiguratorService {
         name,
         pdfBase64,
         totalPrice,
-        productsCount
+        totalItems
       });
     } catch (error: any) {
       throw new Error(`Failed to send email: ${error.message}`);
@@ -81,6 +92,7 @@ class ConfiguratorService {
       throw new Error(`Failed to fetch configurations: ${error.message}`);
     }
   }
+
   async deleteConfiguration(id: string) {
     try {
       const configuration = await Configurator.findByIdAndDelete(id);

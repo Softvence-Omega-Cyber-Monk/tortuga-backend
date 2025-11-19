@@ -21,6 +21,24 @@ class ConfiguratorController {
       });
     }
 
+    // Validate that all products have quantity
+    const invalidProducts = selectedProducts.filter(
+      product => !product.quantity || product.quantity < 1
+    );
+
+    if (invalidProducts.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'All products must have a valid quantity (at least 1)'
+      });
+    }
+
+    // Calculate total items
+    const totalItems = selectedProducts.reduce(
+      (sum, product) => sum + (product.quantity || 0), 
+      0
+    );
+
     // Create configuration
     const configuration = await configuratorService.createConfiguration({
       name,
@@ -38,7 +56,7 @@ class ConfiguratorController {
           name,
           pdfBase64,
           totalPrice,
-          selectedProducts.length
+          totalItems
         );
       } catch (emailError) {
         console.error('Email sending failed:', emailError);
@@ -85,6 +103,7 @@ class ConfiguratorController {
       data: configurations
     });
   });
+
   async deleteConfiguration(req: Request, res: Response) {
     try {
       const { id } = req.params;

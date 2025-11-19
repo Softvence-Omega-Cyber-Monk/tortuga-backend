@@ -4,6 +4,7 @@ export interface ISelectedProduct {
   description?: string;
   sku: string;
   price: number;
+  quantity: number;
   attributes?: Record<string, any>;
 }
 

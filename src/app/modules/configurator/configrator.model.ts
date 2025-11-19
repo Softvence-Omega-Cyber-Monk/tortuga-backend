@@ -9,6 +9,12 @@ const SelectedProductSchema = new Schema({
   description: { type: String },
   sku: { type: String, required: true },
   price: { type: Number, required: true },
+  quantity: { 
+    type: Number, 
+    required: true,
+    min: [1, 'Quantity must be at least 1'],
+    default: 1
+  },
   attributes: { type: Schema.Types.Mixed }
 }, { _id: false });
 

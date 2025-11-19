@@ -5,7 +5,7 @@ interface EmailOptions {
   name: string;
   pdfBase64: string;
   totalPrice: number;
-  productsCount: number;
+  totalItems: number;
 }
 
 // Configure your email transporter
@@ -31,7 +31,7 @@ export const sendConfigurationEmail = async ({
   name,
   pdfBase64,
   totalPrice,
-  productsCount
+  totalItems
 }: EmailOptions) => {
   try {
     // Remove base64 prefix if present
@@ -42,7 +42,7 @@ export const sendConfigurationEmail = async ({
       from: `"Tortuga7 Server Configurator" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
       to,
       subject: 'Your Server Configuration - Tortuga7',
-      html: generateEmailTemplate(name, totalPrice, productsCount),
+      html: generateEmailTemplate(name, totalPrice, totalItems),
       attachments: [
         {
           filename: `server-configuration-${Date.now()}.pdf`,
@@ -63,7 +63,7 @@ export const sendConfigurationEmail = async ({
 const generateEmailTemplate = (
   name: string,
   totalPrice: number,
-  productsCount: number
+  totalItems: number
 ): string => {
   return `
     <!DOCTYPE html>
@@ -161,13 +161,13 @@ const generateEmailTemplate = (
           <h3 style="margin-top: 0; color: #1e293b;">Configuration Summary</h3>
           
           <div class="info-row">
-            <span class="label">Total Products:</span>
-            <span class="value">${productsCount} item${productsCount !== 1 ? 's' : ''}</span>
+            <span class="label">Total Items:</span>
+            <span class="value">${totalItems} item${totalItems !== 1 ? 's' : ''}</span>
           </div>
           
           <div class="info-row">
             <span class="label">Total Cost:</span>
-            <span class="value price">$${totalPrice.toFixed(2)}</span>
+            <span class="value price">£${totalPrice.toFixed(2)}</span>
           </div>
           
           <div class="info-row">
