@@ -80,11 +80,11 @@ export interface CompatibilityRule {
 export interface IProduct {
   _id?: string;
   name: string;
+  company: string;
   category: ProductCategory;
   description: string;
   price: number;
   imageUrl?: string;
-  company: string;
   
   // Product-specific attributes based on category
   attributes: ProductAttributes;
@@ -92,7 +92,7 @@ export interface IProduct {
   // Compatibility rules - which products this is compatible with
   compatibilityRules: CompatibilityRule[];
 
-  keyFeatures: string[];
+  keyFeatures?: string[];
   galleryUrls?: string[];
   
   // Admin controls
@@ -107,9 +107,10 @@ export interface IProduct {
   updatedAt?: Date;
 }
 
-// DTO for creating products
+// DTO for creating products - FIXED
 export interface CreateProductDTO {
   name: string;
+  company: string;
   category: ProductCategory;
   description: string;
   price: number;
@@ -121,11 +122,13 @@ export interface CreateProductDTO {
   isEOL?: boolean;
   stock: number;
   sku: string;
+  imageUrl?: string;
+  createdBy?: string;
 }
 
-// DTO for updating products
+// DTO for updating products - FIXED
 export interface UpdateProductDTO extends Partial<CreateProductDTO> {
-  imageUrl?: string;
+  // All fields from CreateProductDTO are now optional
 }
 
 // Response for compatible products query

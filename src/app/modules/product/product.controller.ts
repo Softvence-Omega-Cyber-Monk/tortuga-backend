@@ -6,70 +6,11 @@ import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 import { ProductCategory } from "./product.interface";
 
 class ProductController {
-    // async createProduct(req: Request, res: Response) {
-    //     try {
-    //         const userId = (req as any).user?.id || "admin";
-    //         const file = req.file as Express.Multer.File | undefined;
-    //         let imageUrl: string | undefined;
-
-    //         if (file) {
-    //             imageUrl = await uploadToCloudinary(file.path, "products");
-    //         }
-
-    //         // ✅ Handle both JSON and form-data bodies safely
-    //         let attributes: any = {};
-    //         let compatibilityRules: any = [];
-
-    //         if (typeof req.body.attributes === "string") {
-    //             attributes = JSON.parse(req.body.attributes);
-    //         } else {
-    //             attributes = req.body.attributes;
-    //         }
-
-    //         if (typeof req.body.compatibilityRules === "string") {
-    //             compatibilityRules = JSON.parse(req.body.compatibilityRules);
-    //         } else {
-    //             compatibilityRules = req.body.compatibilityRules;
-    //         }
-
-    //         const productData = {
-    //             name: req.body.name,
-    //             company: req.body.company,
-    //             category: req.body.category as ProductCategory,
-    //             description: req.body.description,
-    //             price: parseFloat(req.body.price),
-    //             attributes,
-    //             compatibilityRules,
-    //             isActive: req.body.isActive === "true" || req.body.isActive === true,
-    //             isEOL: req.body.isEOL === "true" || req.body.isEOL === true,
-    //             stock: parseInt(req.body.stock),
-    //             sku: req.body.sku,
-    //             imageUrl,
-    //             createdBy: userId,
-    //         };
-
-    //         const product = await productService.createProduct(productData);
-
-    //         res.status(201).json({
-    //             success: true,
-    //             message: "Product created successfully",
-    //             data: product,
-    //         });
-    //     } catch (err: any) {
-    //         console.error("Create product error:", err);
-    //         res.status(400).json({
-    //             success: false,
-    //             message: err.message || "Failed to create product",
-    //         });
-    //     }
-    // }
-    // src/modules/product/product.controller.ts
-
     async createProduct(req: Request, res: Response) {
         try {
             const userId = (req as any).user?.id || "admin";
 
-            // ✅ Correct way to access files from multer.fields()
+            // Access files from multer.fields()
             const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
             // Handle main image
@@ -148,8 +89,6 @@ class ProductController {
         }
     }
 
-
-
     // Get all products
     async getAllProducts(req: Request, res: Response) {
         try {
@@ -202,31 +141,60 @@ class ProductController {
         }
     }
 
-    // Update product
+    // Update product - FIXED
     async updateProduct(req: Request, res: Response) {
         try {
             const { id } = req.params;
+            const files = req.files as { [fieldname: string]: Express.Multer.File[] };
             const file = req.file as Express.Multer.File | undefined;
 
             let imageUrl: string | undefined;
+            let galleryUrls: string[] = [];
 
-            // Upload new image if provided
+            // Handle main image from single upload
             if (file) {
                 imageUrl = await uploadToCloudinary(file.path, "products");
+            }
+
+            // Handle main image from fields upload
+            if (files?.image && files.image[0]) {
+                imageUrl = await uploadToCloudinary(files.image[0].path, "products");
+            }
+
+            // Handle gallery images
+            if (files?.galleryImages && files.galleryImages.length > 0) {
+                galleryUrls = await Promise.all(
+                    files.galleryImages.map(file => uploadToCloudinary(file.path, "products/gallery"))
+                );
             }
 
             const updateData: any = { ...req.body };
 
             // Parse JSON fields if they exist
             if (req.body.attributes) {
-                updateData.attributes = JSON.parse(req.body.attributes);
+                updateData.attributes = typeof req.body.attributes === "string" 
+                    ? JSON.parse(req.body.attributes) 
+                    : req.body.attributes;
             }
+            
             if (req.body.compatibilityRules) {
-                updateData.compatibilityRules = JSON.parse(req.body.compatibilityRules);
+                updateData.compatibilityRules = typeof req.body.compatibilityRules === "string"
+                    ? JSON.parse(req.body.compatibilityRules)
+                    : req.body.compatibilityRules;
+            }
+
+            if (req.body.keyFeatures) {
+                updateData.keyFeatures = typeof req.body.keyFeatures === "string"
+                    ? JSON.parse(req.body.keyFeatures)
+                    : req.body.keyFeatures;
             }
 
             if (imageUrl) {
                 updateData.imageUrl = imageUrl;
+            }
+
+            if (galleryUrls.length > 0) {
+                updateData.galleryUrls = galleryUrls;
             }
 
             // Convert string booleans to actual booleans
@@ -235,6 +203,14 @@ class ProductController {
             }
             if (req.body.isEOL !== undefined) {
                 updateData.isEOL = req.body.isEOL === "true" || req.body.isEOL === true;
+            }
+
+            // Convert numeric strings
+            if (req.body.price) {
+                updateData.price = parseFloat(req.body.price);
+            }
+            if (req.body.stock) {
+                updateData.stock = parseInt(req.body.stock);
             }
 
             const product = await productService.updateProduct(id, updateData);
@@ -308,7 +284,7 @@ class ProductController {
     // Get compatible products for configuration (multiple selected products)
     async getCompatibleProductsForConfiguration(req: Request, res: Response) {
         try {
-            const { productIds } = req.body; // Array of selected product IDs
+            const { productIds } = req.body;
 
             if (!Array.isArray(productIds)) {
                 return res.status(400).json({

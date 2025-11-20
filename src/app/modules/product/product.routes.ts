@@ -20,6 +20,7 @@ const router = Router();
  *             type: object
  *             properties:
  *               name: { type: string }
+ *               company: { type: string }
  *               category: { type: string }
  *               description: { type: string }
  *               price: { type: number }
@@ -27,14 +28,23 @@ const router = Router();
  *               sku: { type: string }
  *               attributes: { type: string }
  *               compatibilityRules: { type: string }
+ *               keyFeatures: { type: string }
  *               isActive: { type: boolean }
  *               isEOL: { type: boolean }
  *               image: { type: string, format: binary }
+ *               galleryImages: { type: array, items: { type: string, format: binary } }
  *     responses:
  *       201:
  *         description: Product created successfully
  */
-router.post("/", multerUpload.fields([{ name: "image", maxCount: 1 }, { name: "galleryImages", maxCount: 5 }]), productController.createProduct);
+router.post(
+  "/", 
+  multerUpload.fields([
+    { name: "image", maxCount: 1 }, 
+    { name: "galleryImages", maxCount: 5 }
+  ]), 
+  productController.createProduct
+);
 
 /**
  * @swagger
@@ -153,19 +163,29 @@ router.get("/:id", productController.getProductById);
  *             type: object
  *             properties:
  *               name: { type: string }
+ *               company: { type: string }
  *               description: { type: string }
  *               price: { type: number }
  *               stock: { type: integer }
  *               attributes: { type: string }
  *               compatibilityRules: { type: string }
+ *               keyFeatures: { type: string }
  *               isActive: { type: boolean }
  *               isEOL: { type: boolean }
  *               image: { type: string, format: binary }
+ *               galleryImages: { type: array, items: { type: string, format: binary } }
  *     responses:
  *       200:
  *         description: Product updated successfully
  */
-router.patch("/:id", multerUpload.single("image"), productController.updateProduct);
+router.patch(
+  "/:id", 
+  multerUpload.fields([
+    { name: "image", maxCount: 1 }, 
+    { name: "galleryImages", maxCount: 5 }
+  ]), 
+  productController.updateProduct
+);
 
 /**
  * @swagger
