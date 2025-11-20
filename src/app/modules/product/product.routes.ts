@@ -39,10 +39,7 @@ const router = Router();
  */
 router.post(
   "/", 
-  multerUpload.fields([
-    { name: "image", maxCount: 1 }, 
-    { name: "galleryImages", maxCount: 5 }
-  ]), 
+  multerUpload,  // ✅ FIXED: Already configured with .fields() in multer.upload.ts
   productController.createProduct
 );
 
@@ -180,10 +177,7 @@ router.get("/:id", productController.getProductById);
  */
 router.patch(
   "/:id", 
-  multerUpload.fields([
-    { name: "image", maxCount: 1 }, 
-    { name: "galleryImages", maxCount: 5 }
-  ]), 
+  multerUpload,  // ✅ FIXED: Already configured with .fields() in multer.upload.ts
   productController.updateProduct
 );
 

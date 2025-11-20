@@ -29,11 +29,31 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
   }
 };
 
-export const multerUpload = multer({
+// ✅ FIXED: Create the multer instance
+const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024, files: 10 },
+  limits: { fileSize: 1000 * 1024 * 1024, files: 10000 },
 });
+
+// ✅ FIXED: Export the fields configuration to handle both files and text fields
+export const multerUpload = upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "galleryImages", maxCount: 5 },
+  // Text fields that won't be treated as unexpected
+  { name: "name", maxCount: 0 },
+  { name: "category", maxCount: 0 },
+  { name: "company", maxCount: 0 },
+  { name: "description", maxCount: 0 },
+  { name: "price", maxCount: 0 },
+  { name: "stock", maxCount: 0 },
+  { name: "sku", maxCount: 0 },
+  { name: "attributes", maxCount: 0 },
+  { name: "compatibilityRules", maxCount: 0 },
+  { name: "keyFeatures", maxCount: 0 },
+  { name: "isActive", maxCount: 0 },
+  { name: "isEOL", maxCount: 0 },
+]);
 
 export const multerUploadVideo = multer({
   storage,
