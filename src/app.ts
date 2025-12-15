@@ -36,7 +36,7 @@ app.use("/api/blogs", BlogRoutes);
 app.use("/api/configurator", ConfiguratorRouter)
 
 app.get("/", (req: express.Request, res: express.Response) => {
-    const htmlContent = `
+  const htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -575,10 +575,8 @@ app.get("/", (req: express.Request, res: express.Response) => {
                         Tortuga
                     </div>
                     <nav class="nav-links">
-                        <a href="#" class="nav-link">Documentation</a>
-                        <a href="#" class="nav-link">API Reference</a>
-                        <a href="#" class="nav-link">Examples</a>
-                        <a href="#" class="nav-link">Support</a>
+                        <a href="/docs" class="nav-link">Documentation</a>
+                        <a href="https://t.me/amitavroychy" class="nav-link">Support</a>
                     </nav>
                 </header>
 
@@ -592,7 +590,7 @@ app.get("/", (req: express.Request, res: express.Response) => {
                         
                         <div class="cta-buttons">
                             <button class="btn btn-primary" id="getStartedBtn">
-                                <i class="fas fa-rocket"></i> Get Started
+                              <a href="/docs">  <i class="fas fa-rocket"></i> Get Started </a> 
                             </button>
                             <button class="btn btn-secondary" id="githubBtn">
                                 <i class="fab fa-github"></i> View on GitHub
@@ -609,8 +607,12 @@ app.get("/", (req: express.Request, res: express.Response) => {
                                 <div class="stat-label">Response Time</div>
                             </div>
                             <div class="stat">
-                                <div class="stat-value" data-target="24">24/7</div>
-                                <div class="stat-label">Support</div>
+                                <div class="stat-value" data-target="24"> 24/7 </div>
+                                <div class="stat-label">
+                                  <a href="https://t.me/amitavroychy">
+                                  Support
+                                  </a> 
+                                 </div>
                             </div>
                         </div>
 
@@ -662,11 +664,8 @@ app.get("/", (req: express.Request, res: express.Response) => {
 
                 <footer>
                     <div class="footer-links">
-                        <a href="#" class="footer-link">Documentation</a>
-                        <a href="#" class="footer-link">API Status</a>
-                        <a href="#" class="footer-link">Blog</a>
-                        <a href="#" class="footer-link">Pricing</a>
-                        <a href="#" class="footer-link">Contact</a>
+                        <a href="/docs" class="footer-link">Documentation</a>
+                        <a href="https://t.me/amitavroychy" class="footer-link">Contact</a>
                     </div>
                     <p>© ${new Date().getFullYear()} Tortuga Backend Platform. All rights reserved.</p>
                     <p>Ready to power your next-generation applications.</p>
@@ -682,7 +681,7 @@ app.get("/", (req: express.Request, res: express.Response) => {
                     
                     if (getStartedBtn) {
                         getStartedBtn.addEventListener('click', function() {
-                            window.location.href = '#docs';
+                            window.location.href = '/docs';
                         });
                         
                         // Button press effects
@@ -701,7 +700,7 @@ app.get("/", (req: express.Request, res: express.Response) => {
                     
                     if (githubBtn) {
                         githubBtn.addEventListener('click', function() {
-                            window.open('https://github.com', '_blank');
+                            window.open('https://github.com/Softvence-Omega-Cyber-Monk/tortuga-backend.git', '_blank');
                         });
                         
                         githubBtn.addEventListener('mousedown', function() {
@@ -792,8 +791,8 @@ app.get("/", (req: express.Request, res: express.Response) => {
         </body>
         </html>
     `;
-    
-    res.status(200).send(htmlContent);
+
+  res.status(200).send(htmlContent);
 });
 
 export default app;
