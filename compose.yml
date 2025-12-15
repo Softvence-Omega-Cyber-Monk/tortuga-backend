@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    container_name: tortuga_app
+    image:  imranwebstudio/tortuga_app:latest
+    platform: linux/amd64
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - /usr/src/app/node_modules
+    

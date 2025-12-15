@@ -5,6 +5,7 @@ import app from "./app"
 
 let server: Server;
 
+let port = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
@@ -12,8 +13,8 @@ const startServer = async () => {
         console.log("Connected to DB");
 
 
-        server = app.listen(5000, () => {
-            console.log("Server is listening to port 5000");
+        server = app.listen(port, () => {
+            console.log(`Server is listening to port ${port}`);
         })
     }
     catch (err) {
