@@ -1,8 +1,8 @@
 services:
   app:
     build: .
-    container_name: tortuga_app
-    image:  imranwebstudio/tortuga_app:latest
+    container_name: tortuga_server
+    image:  imranwebstudio/tortuga_server:latest
     platform: linux/amd64
     ports:
       - "3000:3000"
